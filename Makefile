@@ -5,43 +5,40 @@
 # uebersteht die Datei auch ISPF-Editor, FB80-Datasets und Transfers,
 # die Tabs in Leerzeichen umwandeln. Keine Zeile ist laenger als 71.
 #
-# Voreinstellung: xlclang (z/OS XL C/C++ V2.4.1, nur 64 Bit -> -q64)
+# Voreinstellung: xlc (z/OS XL C/C++) mit lokaler Konfiguration cc.cfg
 #
-#   z/OS, xlclang:   make
-#   z/OS, xlc:       make CC=xlc CFLAGS="-O2 -qlanglvl=extc99"
+#   z/OS, xlc:       make cfg && make CFG=-F./cc.cfg
+#   z/OS, xlclang:   make CC=xlclang CFLAGS="-q64 -O2"
+#                    (nur wenn CLCDRVR in einer Bibliothek liegt)
 #   z/OS, Open XL:   make CC=ibm-clang CFLAGS=-O2
 #   Linux (Test):    make CC=gcc CFLAGS="-O2 -Wall -pthread"
 #
-# Compiler-Bibliothek (STEPLIB): Der Treiber (clcdrvr bzw. ccndrvr)
-# ist nur ein externer Link auf ein MVS-Modul. Wird das Modul nicht
-# gefunden, endet der Compiler mit FSUM3221 (xlc) oder mit FSUM3224,
-# Signal 9 und Abend EC6 Reason ....C032 (xlclang). Die Shell-Variable
-# STEPLIB hilft nicht; der Wert kommt nur aus dem Attribut "steplib"
-# der Compiler-Konfiguration. Erst pruefen, was dort steht:
+# Compiler-Bibliothek (STEPLIB): Der Treiber (ccndrvr bzw. clcdrvr)
+# ist nur ein externer Link auf ein MVS-Modul (CCNDRVR bzw. CLCDRVR).
+# Wird das Modul nicht in STEPLIB/LNKLST/LPA gefunden, endet der
+# Compiler mit FSUM3221 (xlc) oder FSUM3224, Signal 9, Abend EC6
+# Reason ....C032 (xlclang). Die Shell-Variable STEPLIB hilft nicht;
+# der Wert kommt nur aus dem Attribut "steplib" der Compiler-
+# Konfiguration. In der gelieferten xlc.cfg steht dort NONE.
 #
-#     grep -n steplib $(CCCFG)
+# "make cfg" kopiert deshalb $(CCCFG) nach cc.cfg und traegt dort
+# steplib = $(CMPLIB) ein. Uebersetzt wird dann mit CFG=-F./cc.cfg
+# (-F mit direkt angehaengtem Pfad, ohne Leerzeichen).
 #
-# Steht dort bereits eine Bibliothek, die den Treiber enthaelt, ist
-# nichts zu tun. Steht dort NONE oder eine falsche Bibliothek, eine
-# lokale Kopie cc.cfg mit richtiger Bibliothek erzeugen und nutzen:
-#
-#     make cfg CMPLIB=CBC.SCLCCMP        (Bibliothek ggf. anpassen)
-#     make CFG=-F./cc.cfg
-#
-# Die Bibliothek muss das Modul CLCDRVR (xlclang) bzw. CCNDRVR (xlc)
-# enthalten. Kandidaten zeigt:  tso "LISTCAT LEVEL(CBC)"
-# Fuer xlc:  make cfg CCCFG=/usr/lpp/cbclib/xlc/etc/xlc.cfg CMPLIB=...
+# Bibliothek pruefen:  tso "LISTCAT LEVEL(CBC)"
+#                      tso "LISTDS 'CBC.SCCNCMP' MEMBERS" | grep DRVR
+# Anderer Name:        make cfg CMPLIB=IHR.NAME.SCCNCMP
 #
 # Hinweis z/OS: Threads brauchen keine eigene Bibliothek (-lpthread
-# entfaellt).
+# entfaellt); -qlanglvl=extc99 macht u.a. snprintf() sichtbar.
 
-CC      = /usr/lpp/cbclib/xlclang/bin/xlclang
-CFLAGS  = -q64 -O2
+CC      = xlc
+CFLAGS  = -O2 -qlanglvl=extc99
 LDFLAGS =
 CFG     =
 
-CMPLIB  = CBC.SCLCCMP
-CCCFG   = /usr/lpp/cbclib/xlclang/etc/xlclang.cfg
+CMPLIB  = CBC.SCCNCMP
+CCCFG   = /usr/lpp/cbclib/xlc/etc/xlc.cfg
 
 PROG    = ussdemo
 SRC     = ussdemo.c

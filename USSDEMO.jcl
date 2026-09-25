@@ -12,8 +12,8 @@
 //*   - JOBKARTE                                                      *
 //*   - VERZEICHNIS /u/ibmuser/uss-demo (2 STELLEN); DORT MUESSEN     *
 //*     USSDEMO.C UND MAKEFILE LIEGEN                                 *
-//*   - COMPILER IST xlclang (SIEHE MAKEFILE). ANDERER COMPILER:      *
-//*       make clean all CC=xlc CFLAGS="-O2 -qlanglvl=extc99"         *
+//*   - COMPILER IST xlc MIT LOKALER KONFIGURATION cc.cfg (SIEHE      *
+//*     MAKEFILE UND UNTEN)                                           *
 //*                                                                   *
 //* REGELN FUER DEN STDPARM-BLOCK (SONST MELDUNG BPXM010I):           *
 //*   - DAS ERSTE WORT DER ERSTEN DATENZEILE MUSS SH SEIN, IN         *
@@ -25,19 +25,19 @@
 //*   - KEINE ZEILENNUMMERN IN SPALTE 73-80 (ISPF: NUM OFF, UNNUM).   *
 //*     BEI DD * GEHOEREN SIE SONST ZUM KOMMANDO.                     *
 //*                                                                   *
-//* COMPILER-BIBLIOTHEK: DER COMPILER-TREIBER (clcdrvr) IST EIN       *
-//* EXTERNER LINK AUF DAS MVS-MODUL CLCDRVR. WIRD ES NICHT IN         *
-//* STEPLIB/LNKLST/LPA GEFUNDEN: FSUM3224, SIGNAL 9, ABEND EC6        *
-//* REASON ....C032. DIE SHELL-VARIABLE STEPLIB HILFT NICHT, DER      *
-//* WERT KOMMT NUR AUS DEM ATTRIBUT steplib DER COMPILER-             *
-//* KONFIGURATION xlclang.cfg. DER STEP COMPILE ZEIGT DIESE ZEILE     *
-//* IM JOB-OUTPUT AN (grep).                                          *
-//*   - STEHT DORT EINE BIBLIOTHEK MIT CLCDRVR: SO LASSEN.            *
-//*   - STEHT DORT NONE ODER EINE FALSCHE BIBLIOTHEK: IM STEP         *
-//*     COMPILE DIE ZWEITE UND DRITTE ZEILE ERSETZEN DURCH            *
-//*       make cfg CMPLIB=CBC.SCLCCMP && grep -n steplib cc.cfg &&    *
-//*       make clean all CFG=-F./cc.cfg                               *
-//*     (BIBLIOTHEK ANPASSEN; KANDIDATEN: tso "LISTCAT LEVEL(CBC)")   *
+//* COMPILER-BIBLIOTHEK: DER TREIBER ccndrvr IST EIN EXTERNER LINK    *
+//* AUF DAS MVS-MODUL CCNDRVR IN CBC.SCCNCMP. WIRD ES NICHT IN        *
+//* STEPLIB/LNKLST/LPA GEFUNDEN: FSUM3221 (xlc) BZW. FSUM3224,        *
+//* SIGNAL 9, ABEND EC6 REASON ....C032 (xlclang). DIE SHELL-         *
+//* VARIABLE STEPLIB HILFT NICHT, DER WERT KOMMT NUR AUS DEM          *
+//* ATTRIBUT steplib DER COMPILER-KONFIGURATION, UND DORT STEHT       *
+//* IN DER GELIEFERTEN xlc.cfg NONE. DER STEP COMPILE ERZEUGT         *
+//* DESHALB MIT "make cfg" EINE KOPIE cc.cfg MIT steplib =            *
+//* CBC.SCCNCMP, ZEIGT DIE ZEILE IM JOB-OUTPUT (grep) UND             *
+//* UEBERSETZT MIT CFG=-F./cc.cfg.                                    *
+//*   - HEISST DIE BIBLIOTHEK ANDERS: make cfg CMPLIB=IHR.NAME        *
+//*     (KANDIDATEN: tso "LISTCAT LEVEL(CBC)")                        *
+//*   - STEHT CBC.SCCNCMP IN LNKLST/LPA, GENUEGT: make clean all      *
 //*                                                                   *
 //* SH STARTET EINE LOGIN-SHELL: /etc/profile UND $HOME/.profile      *
 //* WERDEN AUSGEFUEHRT. STDOUT/STDERR GEHEN IN DEN JOB-OUTPUT.        *
@@ -46,8 +46,8 @@
 //COMPILE  EXEC PGM=BPXBATCH
 //STDPARM  DD *
 SH cd /u/ibmuser/uss-demo &&
- grep -n steplib /usr/lpp/cbclib/xlclang/etc/xlclang.cfg &&
- make clean all
+ make cfg && grep -n steplib cc.cfg &&
+ make clean all CFG=-F./cc.cfg
 /*
 //STDOUT   DD SYSOUT=*
 //STDERR   DD SYSOUT=*

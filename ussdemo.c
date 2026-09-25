@@ -38,8 +38,8 @@
  *
  * Uebersetzen unter z/OS UNIX:
  *     make                                (siehe Makefile)
- *     xlclang -q64 -o ussdemo ussdemo.c   (XL C/C++ V2.4.1)
- *     xlc -qlanglvl=extc99 -o ussdemo ussdemo.c
+ *     xlc -F./cc.cfg -qlanglvl=extc99 -o ussdemo ussdemo.c
+ *     xlclang -q64 -o ussdemo ussdemo.c   (falls installiert)
  *     ibm-clang -o ussdemo ussdemo.c      (Open XL C/C++)
  *   Aufruf:  ./ussdemo
  *

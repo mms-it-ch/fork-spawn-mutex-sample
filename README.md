@@ -39,13 +39,18 @@ unbeschadet ueberstehen.
 
 ## Uebersetzen
 
-z/OS UNIX mit `xlclang` (Voreinstellung):
+z/OS UNIX mit `xlc` (Voreinstellung). `make cfg` erzeugt eine lokale
+Compiler-Konfiguration `cc.cfg`, in der die Compiler-Bibliothek
+(`CBC.SCCNCMP`) als STEPLIB eingetragen ist:
 
-    make
+    make cfg
+    make CFG=-F./cc.cfg
+
+Steht `CBC.SCCNCMP` in LNKLST oder LPA, genuegt `make`.
 
 Andere Compiler:
 
-    make CC=xlc CFLAGS="-O2 -qlanglvl=extc99"
+    make CC=xlclang CFLAGS="-q64 -O2"              # falls installiert
     make CC=ibm-clang CFLAGS=-O2
     make CC=gcc CFLAGS="-O2 -Wall -pthread"        # Linux
 
@@ -54,16 +59,18 @@ Ausfuehren:
     make run
 
 Meldet der Compiler `FSUM3221` oder `FSUM3224` mit Signal 9 (Abend
-`EC6`, Reason `....C032`), fehlt die Compiler-Bibliothek im MVS-
-Suchpfad. Die Kommentare im `Makefile` und im JCL beschreiben die
-Abhilfe ueber eine lokale Compiler-Konfiguration (`make cfg`).
+`EC6`, Reason `....C032`), fehlt das Compiler-Modul (`CCNDRVR` bzw.
+`CLCDRVR`) im MVS-Suchpfad. Die Shell-Variable `STEPLIB` hilft nicht,
+der Wert kommt nur aus dem Attribut `steplib` der Compiler-
+Konfiguration. Details in den Kommentaren von `Makefile` und JCL
+sowie in Abschnitt 7.2 der Dokumentation.
 
 ## Teststand
 
 Unter Linux (WSL, gcc 13) uebersetzt das Programm ohne Warnungen,
 die Summe stimmt, ThreadSanitizer meldet keine Data Races. Der
-z/OS-spezifische Teil (`spawnp()`, Makefile mit `xlclang`, JCL) ist
-noch nicht auf einem z/OS-System durchgelaufen.
+z/OS-spezifische Teil (`spawnp()`, Makefile mit `xlc`, JCL) ist noch
+nicht vollstaendig auf einem z/OS-System durchgelaufen.
 
 ## Dokumentation neu erzeugen
 
