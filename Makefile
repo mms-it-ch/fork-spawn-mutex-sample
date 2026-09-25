@@ -52,7 +52,9 @@ $(PROG): $(SRC) ; $(CC) $(CFG) $(CFLAGS) -o $(PROG) $(SRC) $(LDFLAGS)
 cfg: ; sed '/steplib/s/=.*/= $(CMPLIB)/' $(CCCFG) > cc.cfg
 
 # _BPX_SHAREAS=YES: spawn()-Kind laeuft im Adressraum des
-# Elternprozesses (wird ausserhalb von z/OS ignoriert).
-run: $(PROG) ; _BPX_SHAREAS=YES ./$(PROG)
+# Elternprozesses (wird ausserhalb von z/OS ignoriert). "env" ist
+# noetig: z/OS make startet Kommandos ohne Shell-Metazeichen direkt
+# und hielte VAR=WERT sonst fuer einen Programmnamen (EDC5129I).
+run: $(PROG) ; env _BPX_SHAREAS=YES ./$(PROG)
 
 clean: ; rm -f $(PROG) *.o
