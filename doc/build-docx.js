@@ -188,7 +188,7 @@ const body = [
   ]),
   SPACER(),
   H2('1.2 Teststand'),
-  P('Das Programm wurde auf z/OS 2.4 mit `xlc` (z/OS XL C/C++, lokale Konfiguration `cc.cfg`) übersetzt und in der z/OS UNIX Shell mit `_BPX_SHAREAS=YES` ausgeführt. Beide Kindprozesse endeten mit Exit-Code 0, die Summe stimmte (Kapitel 8 zeigt diesen Lauf). Damit sind der `spawnp()`-Zweig mit `fd_map` und `struct inheritance`, die Feature-Test-Makros und das Makefile auf z/OS bestätigt. Das JCL wurde noch nicht vollständig durchlaufen.'),
+  P('Das Programm wurde auf z/OS 2.4 mit `xlc` (z/OS XL C/C++, lokale Konfiguration `cc.cfg`) übersetzt und in der z/OS UNIX Shell mit `_BPX_SHAREAS=YES` ausgeführt. Beide Kindprozesse endeten mit Exit-Code 0, die Summe stimmte (Kapitel 8 zeigt diesen Lauf). Der Batch-Weg über `USSDEMO.jcl` lief ebenfalls durch: Step `COMPILE` mit `make cfg` und `xlc`, Step `RUN` mit derselben korrekten Ausgabe. Damit sind der `spawnp()`-Zweig mit `fd_map` und `struct inheritance`, die Feature-Test-Makros, das Makefile und das JCL auf z/OS bestätigt.'),
   P('Unter Linux (WSL, Ubuntu, gcc 13.3) übersetzt das Programm mit `-Wall -Wextra` ohne Warnungen; die Summe stimmte in jedem Lauf, ThreadSanitizer meldete keine Data Races. Auf Nicht-z/OS-Systemen verwendet das Programm ersatzweise `posix_spawnp()` statt `spawnp()`.'),
 
   /* 2 */
