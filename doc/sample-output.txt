@@ -1,20 +1,21 @@
-Elternprozess pid 1790306: fork-Kind 1790307, spawn-Kind 1790308
+UMAS:/u/UMAS/uss-demo: >env _BPX_SHAREAS=YES ./ussdemo
+Elternprozess pid 83952453: fork-Kind 66415, spawn-Kind 66382
 [reader fork ] Wert 10 vom Kind uebernommen
 [reader fork ] Wert 20 vom Kind uebernommen
 [reader fork ] Wert 30 vom Kind uebernommen
 [reader fork ] Wert 40 vom Kind uebernommen
 [reader fork ] Wert 50 vom Kind uebernommen
-[reader fork ] Pipe zu, 2 mal auf Mutex gewartet
-[compute 2   ] 20000 Werte, 4 mal auf Mutex gewartet
+[reader fork ] Pipe zu, 5 mal auf Mutex gewartet
 [reader spawn] Wert 100 vom Kind uebernommen
 [reader spawn] Wert 200 vom Kind uebernommen
 [reader spawn] Wert 300 vom Kind uebernommen
 [reader spawn] Wert 400 vom Kind uebernommen
 [reader spawn] Wert 500 vom Kind uebernommen
-[reader spawn] Pipe zu, 2 mal auf Mutex gewartet
-[compute 1   ] 20000 Werte, 709 mal auf Mutex gewartet
-[compute 3   ] 20000 Werte, 891 mal auf Mutex gewartet
-Kindprozess fork  (pid 1790307) beendet, exit=0
-Kindprozess spawn (pid 1790308) beendet, exit=0
+[reader spawn] Pipe zu, 5 mal auf Mutex gewartet
+[compute 2   ] 20000 Werte, 20000 mal auf Mutex gewartet
+[compute 3   ] 20000 Werte, 20000 mal auf Mutex gewartet
+[compute 1   ] 20000 Werte, 18092 mal auf Mutex gewartet
+Kindprozess fork  (pid 66415) beendet, exit=0
+Kindprozess spawn (pid 66382) beendet, exit=0
 Summe = 600031650 (erwartet 600031650), 60010 Updates -> OK
-Mutex-Statistik: 1608 von 60010 Updates warteten (2.7 %)
+Mutex-Statistik: 58102 von 60010 Updates warteten (96.8 %)

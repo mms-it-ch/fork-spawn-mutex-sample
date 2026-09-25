@@ -67,10 +67,14 @@ sowie in Abschnitt 7.2 der Dokumentation.
 
 ## Teststand
 
+Auf z/OS 2.4 mit `xlc` uebersetzt (lokale Konfiguration `cc.cfg`) und
+in der z/OS UNIX Shell mit `_BPX_SHAREAS=YES` ausgefuehrt: beide
+Kindprozesse enden mit Exit-Code 0, die Summe stimmt. Die Ausgabe
+dieses Laufs steht in `doc/sample-output.txt`. Das JCL ist noch nicht
+vollstaendig durchgelaufen.
+
 Unter Linux (WSL, gcc 13) uebersetzt das Programm ohne Warnungen,
-die Summe stimmt, ThreadSanitizer meldet keine Data Races. Der
-z/OS-spezifische Teil (`spawnp()`, Makefile mit `xlc`, JCL) ist noch
-nicht vollstaendig auf einem z/OS-System durchgelaufen.
+die Summe stimmt, ThreadSanitizer meldet keine Data Races.
 
 ## Dokumentation neu erzeugen
 

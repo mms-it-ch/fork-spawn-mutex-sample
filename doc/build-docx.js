@@ -188,8 +188,8 @@ const body = [
   ]),
   SPACER(),
   H2('1.2 Teststand'),
-  P('Das Programm wurde unter Linux (WSL, Ubuntu, gcc 13.3) mit `-Wall -Wextra` ohne Warnungen übersetzt und mehrfach ausgeführt. Die Summe stimmte in jedem Lauf, ThreadSanitizer meldete keine Data Races. Auf Nicht-z/OS-Systemen verwendet das Programm ersatzweise `posix_spawnp()` statt `spawnp()`.'),
-  P('Der z/OS-spezifische Teil ist nicht auf einem z/OS-System getestet: der `spawnp()`-Zweig mit `fd_map` und `struct inheritance`, die Feature-Test-Makros, das Makefile mit `xlc` und das JCL. Beim ersten Übersetzen auf z/OS ist deshalb mit kleinen Anpassungen zu rechnen, zum Beispiel bei den Makros oder Compiler-Optionen.'),
+  P('Das Programm wurde auf z/OS 2.4 mit `xlc` (z/OS XL C/C++, lokale Konfiguration `cc.cfg`) übersetzt und in der z/OS UNIX Shell mit `_BPX_SHAREAS=YES` ausgeführt. Beide Kindprozesse endeten mit Exit-Code 0, die Summe stimmte (Kapitel 8 zeigt diesen Lauf). Damit sind der `spawnp()`-Zweig mit `fd_map` und `struct inheritance`, die Feature-Test-Makros und das Makefile auf z/OS bestätigt. Das JCL wurde noch nicht vollständig durchlaufen.'),
+  P('Unter Linux (WSL, Ubuntu, gcc 13.3) übersetzt das Programm mit `-Wall -Wextra` ohne Warnungen; die Summe stimmte in jedem Lauf, ThreadSanitizer meldete keine Data Races. Auf Nicht-z/OS-Systemen verwendet das Programm ersatzweise `posix_spawnp()` statt `spawnp()`.'),
 
   /* 2 */
   H1('2 Programmablauf'),
@@ -265,7 +265,7 @@ const body = [
   BULLET('Wartefälle zählen: `lock_shared()` ruft zuerst `pthread_mutex_trylock()` auf. Meldet der Aufruf `EBUSY`, hält ein anderer Thread den Mutex. Die Funktion merkt sich das, wartet mit `pthread_mutex_lock()` und liefert 1 zurück. `update_locked()` addiert den Wert auf `shared.contended`.'),
   BULLET('Halter vermerken: Nach dem Sperren trägt `lock_shared()` den Thread in `shared.owner` ein und setzt `shared.held`. `holds_shared_lock()` beantwortet damit die Frage „halte ich den Mutex?“. `update_locked()` nutzt das als Schutz vor Aufrufen ohne Lock.'),
   BULLET('Keine Atomics nötig: Alle Buchführungsfelder liegen selbst unter `shared.lock`.'),
-  P('Jeder Thread meldet am Ende seine eigenen Wartefälle, `main()` gibt die Gesamtstatistik aus. Die Zahl schwankt von Lauf zu Lauf stark, in den Tests zwischen 0 und etwa 2300 von 60 010 Updates. Der kritische Abschnitt ist sehr kurz, und die Threads starten nacheinander.'),
+  P('Jeder Thread meldet am Ende seine eigenen Wartefälle, `main()` gibt die Gesamtstatistik aus. Die Zahl hängt stark vom System ab. Unter Linux lag sie zwischen 0 und etwa 2300 von 60 010 Updates: Der kritische Abschnitt ist sehr kurz, und ein Thread, der den Mutex gerade freigegeben hat, bekommt ihn beim nächsten Versuch meist sofort wieder. Auf z/OS lag sie bei 96,8 %, zwei Rechen-Threads mussten bei jedem einzelnen Update warten. Das spricht dafür, dass die z/OS-Implementierung den Mutex bei der Freigabe direkt an einen wartenden Thread übergibt. Der freigebende Thread findet ihn beim nächsten `trylock` dann belegt. Die Statistik misst also nicht nur Gleichzeitigkeit, sondern auch die Vergabestrategie des Systems.'),
   H2('6.2 Werkzeuge von außen'),
   table([2900, 6738], ['Werkzeug', 'Was es zeigt'], [
     ['dbx (z/OS UNIX)', 'Die Subcommands `mutex`, `thread` und `condition` zeigen Mutex-Objekte mit Zustand, Halter und Wartern. Voraussetzung ist eine Übersetzung mit `-g`. Das ist der direkteste Weg für prozessprivate Mutexe.'],
@@ -311,7 +311,7 @@ const body = [
 
   /* 8 */
   H1('8 Beispielausgabe'),
-  P('Ausgabe eines Laufs unter Linux. Die Reihenfolge der Thread-Zeilen und die Zahl der Wartefälle ändern sich von Lauf zu Lauf, Summe und Zahl der Updates nicht.'),
+  P('Ausgabe eines Laufs auf z/OS 2.4 in der z/OS UNIX Shell mit `_BPX_SHAREAS=YES`. Die Reihenfolge der Thread-Zeilen und die Zahl der Wartefälle ändern sich von Lauf zu Lauf, Summe und Zahl der Updates nicht. Die PIDs zeigen, dass das `fork()`-Kind und das `spawn()`-Kind eigene Prozesse sind, auch wenn das `spawn()`-Kind im Adressraum des Elternprozesses läuft.'),
   ...codeBlock(sample),
 
   /* Anhaenge */
