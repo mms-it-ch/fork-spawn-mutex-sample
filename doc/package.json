@@ -1,0 +1,7 @@
+{
+  "name": "fork-spawn-mutex-sample-doc",
+  "private": true,
+  "description": "Erzeugt USSDEMO-Dokumentation.docx aus den Quelldateien",
+  "scripts": { "build": "node build-docx.js" },
+  "dependencies": { "@resvg/resvg-js": "^2.6.2", "docx": "^9.5.1" }
+}

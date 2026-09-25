@@ -1,0 +1,9 @@
+# Build-Ergebnisse
+ussdemo
+*.o
+cc.cfg
+
+# Doku-Build
+doc/node_modules/
+doc/*.png
+doc/render/
